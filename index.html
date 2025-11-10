@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Etiquetas de Medicação dos Pacientes</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        background-color: #f4f6fa;
+        color: #333;
+    }
+    header {
+        background-color: #004080;
+        color: white;
+        text-align: center;
+        padding: 15px;
+    }
+    header img {
+        height: 70px;
+        display: block;
+        margin: 0 auto 10px;
+    }
+    header h1 {
+        font-size: 1.8em;
+        margin: 0;
+    }
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 20px;
+        gap: 30px;
+        max-width: 1200px;
+        margin: auto;
+    }
+    .info {
+        flex: 1 1 45%;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        min-width: 350px;
+    }
+    .info img {
+        width: 100%;
+        border-radius: 12px;
+    }
+    .info p {
+        font-size: 1em;
+        text-align: justify;
+        margin-top: 10px;
+    }
+    form {
+        flex: 1 1 45%;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        min-width: 350px;
+    }
+    form label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+    form input, form button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 1em;
+    }
+    button {
+        background-color: #004080;
+        color: white;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    button:hover {
+        background-color: #0066cc;
+    }
+    .etiquetas {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 10px auto 40px;
+        gap: 6px;
+        width: 95%;
+        page-break-inside: avoid;
+    }
+    .etiqueta {
+        width: 3.3cm;
+        height: 2.2cm;
+        border: 1px dashed #004080;
+        padding: 3px;
+        font-size: 9px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: #fff;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .etiqueta .leito {
+        font-weight: bold;
+        font-size: 9px;
+        text-align: left;
+    }
+    .etiqueta .paciente {
+        font-size: 8px;
+        font-weight: bold;
+    }
+    .etiqueta .medicacao {
+        font-size: 10px;
+        font-weight: bold;
+        color: #004080;
+    }
+    .etiqueta .rodape-etiqueta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 8px;
+    }
+    footer {
+        background-color: #004080;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        font-size: 0.9em;
+        margin-top: 20px;
+    }
+    @media print {
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .container, header, footer {
+            display: none;
+        }
+        .etiquetas {
+            visibility: visible;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            margin: 0;
+            padding: 0.5cm;
+            page-break-after: avoid;
+        }
+        .etiqueta {
+            page-break-inside: avoid;
+        }
+    }
+</style>
+</head>
+<body>
+<header>
+    <img src="logo_fas.png" alt="Logo FAS">
+    <h1>Gerador de Etiquetas de Medicação dos Pacientes</h1>
+</header>
+
+<div class="container">
+    <div class="info">
+        <img src="d07a0ba3-635a-4442-baf7-82e384b85e7d.png" alt="Paciente sendo atendido com alegria">
+        <p><strong>Administração Segura:</strong> A segurança do paciente começa com a atenção aos detalhes. Cada etiqueta representa cuidado, precisão e responsabilidade da equipe de enfermagem na administração das medicações.</p>
+    </div>
+
+    <form id="etiquetaForm">
+        <label>Leito:</label>
+        <input type="text" id="leito" required>
+
+        <label>Nome do Paciente:</label>
+        <input type="text" id="paciente" required>
+
+        <label>Medicação:</label>
+        <input type="text" id="medicacao" required>
+
+        <label>Via de Administração (IV, ORAL, IM):</label>
+        <input type="text" id="via" required>
+
+        <label>Horário (ex: 10, 12, 14, 18):</label>
+        <input type="text" id="horario" required>
+
+        <button type="button" onclick="adicionarEtiqueta()">Adicionar Etiqueta</button>
+        <button type="button" onclick="window.print()">Imprimir Etiquetas</button>
+    </form>
+</div>
+
+<div class="etiquetas" id="etiquetasContainer"></div>
+
+<footer>
+    Desenvolvido por: <strong>Silas Barros Fernandes — Técnico de Enfermagem</strong><br>
+    Setor: Ortopedia | Centro de Estudos e Pesquisas Científicas Francisco Antônio de Salles
+</footer>
+
+<script>
+    // Função principal de adicionar etiquetas
+    function adicionarEtiqueta() {
+        const leito = document.getElementById('leito').value.trim();
+        const paciente = document.getElementById('paciente').value.trim();
+        const medicacao = document.getElementById('medicacao').value.trim();
+        const via = document.getElementById('via').value.trim();
+        const horario = document.getElementById('horario').value.trim() + 'H';
+
+        if (!leito || !paciente || !medicacao || !via || !horario) {
+            alert('Preencha todos os campos!');
+            return;
+        }
+
+        const div = document.createElement('div');
+        div.className = 'etiqueta';
+        div.innerHTML = `
+            <div class="leito">Leito: ${leito}</div>
+            <div class="paciente">${paciente}</div>
+            <div class="medicacao">${medicacao}</div>
+            <div class="rodape-etiqueta">
+                <span>${via}</span>
+                <span>${horario}</span>
+            </div>
+        `;
+        document.getElementById('etiquetasContainer').appendChild(div);
+
+        document.getElementById('medicacao').value = '';
+        document.getElementById('via').value = '';
+        document.getElementById('horario').value = '';
+        document.getElementById('medicacao').focus();
+    }
+
+    // Enter → próximo campo
+    const inputs = document.querySelectorAll('#etiquetaForm input');
+    inputs.forEach((input, index) => {
+        input.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const next = inputs[index + 1];
+                if (next) next.focus();
+                else document.querySelector('button').focus();
+            }
+        });
+    });
+</script>
+</body>
+</html>
